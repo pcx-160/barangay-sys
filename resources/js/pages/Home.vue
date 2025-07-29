@@ -44,7 +44,7 @@ const handleCreate = () => {
             <!-- Announcement Card -->
             <div class="grid gap-6 md:grid-cols-1">
                 <div
-                    v-for="n in 10"
+                    v-for="n in 15"
                     :key="n"
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
                 >
