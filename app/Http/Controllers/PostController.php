@@ -46,9 +46,15 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
+        $post = Post::find($id);
+
+    if (!$post) {
+        return response()->json(['message' => 'Post not found'], 404);
+    }
+
+    return response()->json($post);
     }
 
     /**
@@ -70,8 +76,21 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request, $id)
     {
-        //
+        $user = $request->user();
+
+        if ($user->username !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+        $post = Post::find($id);
+
+        if (!$post) { 
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $post->delete();
+
+        return response()->json(['message' => 'Post deleted successfully']);
     }
 }
