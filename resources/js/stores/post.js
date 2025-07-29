@@ -16,5 +16,15 @@ export const usePostStore = defineStore("post", {
                 console.error(error);
             }
         },
+
+        async getAllPosts() {
+            try {
+                const res = await api.get("/posts");
+                console.log(res.data);
+                return res.data;
+            } catch (error) {
+                console.error(error);
+            }
+        },
     },
 });

@@ -1,24 +1,30 @@
 <script setup>
 import BaseModal from "../components/BaseModal.vue";
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { usePostStore } from "../stores/post";
 import Sidebar from "../components/Sidebar.vue";
 
 const authstore = useAuthStore();
-const { store } = usePostStore();
+const { store, getAllPosts } = usePostStore();
 const showCreateModal = ref(false);
+const posts = ref([]);
 const formData = reactive({
     title: "",
     content: "",
 });
 
-const handleCreate = () => {
+const handleCreate = async () => {
     store("posts", formData);
+    posts.value = await getAllPosts();
     formData.title = "";
     formData.content = "";
     showCreateModal.value = false;
 };
+
+onMounted(async () => {
+    posts.value = await getAllPosts();
+});
 </script>
 
 <template>
@@ -44,21 +50,21 @@ const handleCreate = () => {
             <!-- Announcement Card -->
             <div class="grid gap-6 md:grid-cols-1">
                 <div
-                    v-for="n in 15"
-                    :key="n"
+                    v-for="post in posts"
+                    :key="post.id"
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
                 >
                     <!-- Title + Date -->
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-semibold text-gray-700">
-                            Nothing Yet
+                            {{ post.title }}
                         </h2>
                         <span class="text-sm text-gray-400">MM/DD/YYYY</span>
                     </div>
 
                     <!-- Content -->
                     <p class="text-gray-500 mb-4">
-                        There are no announcements at the moment. Stay tuned!
+                        {{ post.content }}
                     </p>
 
                     <!-- Reactions -->

@@ -33,13 +33,13 @@ const emit = defineEmits(["cancel", "confirm"]);
             <div class="flex justify-end gap-3">
                 <button
                     @click="$emit('cancel')"
-                    class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                    class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
                 >
                     Cancel
                 </button>
                 <button
                     @click="$emit('confirm')"
-                    class="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                    class="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition cursor-pointer"
                 >
                     {{ confirmText }}
                 </button>
