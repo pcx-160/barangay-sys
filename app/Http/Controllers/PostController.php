@@ -68,9 +68,31 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        //
+        $user = $request->user();
+
+        if ($user->username !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $fields = $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required'
+        ]);
+
+        $post->update($fields);
+
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'post' => $post
+        ]);
     }
 
     /**

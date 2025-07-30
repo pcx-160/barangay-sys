@@ -5,20 +5,47 @@ import { useAuthStore } from "../stores/auth";
 import { usePostStore } from "../stores/post";
 
 const authstore = useAuthStore();
-const { store, getAllPosts, deletePost } = usePostStore();
+const { store, getAllPosts, editPost, deletePost } = usePostStore();
 const showCreateModal = ref(false);
 const posts = ref([]);
+const isEditing = ref(false);
+const editingPostId = ref(null);
+
 const formData = reactive({
     title: "",
     content: "",
 });
 
-const handleCreate = async () => {
-    store("posts", formData);
+const handleSubmit = async () => {
+    if (isEditing.value) {
+        await editPost(editingPostId.value, {
+            title: formData.title,
+            content: formData.content,
+        });
+    } else {
+        await store("posts", formData);
+    }
+
     posts.value = await getAllPosts();
     formData.title = "";
     formData.content = "";
+    editingPostId.value = null;
+    isEditing.value = false;
     showCreateModal.value = false;
+};
+
+const handleCancel = () => {
+    showCreateModal.value = false;
+    isEditing.value = false;
+};
+
+const handleEdit = async (post) => {
+    formData.title = post.title;
+    formData.content = post.content;
+    editingPostId.value = post.id;
+    isEditing.value = true;
+    showCreateModal.value = true;
+    posts.value = await getAllPosts();
 };
 
 const handleDelete = async (id) => {
@@ -33,7 +60,6 @@ onMounted(async () => {
 
 <template>
     <div v-if="authstore.user" class="h-screen bg-gray-100">
-        <!-- Scrollable Main Content -->
         <div class="ml-64 min-h-screen px-8 py-6 bg-gray-50">
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
@@ -56,7 +82,6 @@ onMounted(async () => {
                     :key="post.id"
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
                 >
-                    <!-- Title + Date + Delete -->
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-semibold text-gray-700">
                             {{ post.title }}
@@ -66,26 +91,33 @@ onMounted(async () => {
                             <span class="text-sm text-gray-400"
                                 >MM/DD/YYYY</span
                             >
-                            <button
-                                @click="handleDelete(post.id)"
-                                class="text-red-500 hover:text-red-700 transition text-sm cursor-pointer"
+                            <div
+                                v-if="authstore.isAdmin"
+                                class="flex items-center gap-2"
                             >
-                                🗑️DELETE
-                            </button>
+                                <button
+                                    @click="handleDelete(post.id)"
+                                    class="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-md text-sm transition cursor-pointer"
+                                >
+                                    🗑️ Delete
+                                </button>
+                                <button
+                                    @click="handleEdit(post)"
+                                    class="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-md text-sm transition cursor-pointer"
+                                >
+                                    ✏️ Edit
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Content -->
                     <p
                         class="text-gray-500 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
                     >
                         {{ post.content }}
                     </p>
-
-                    <!-- Reactions -->
                     <div class="flex gap-6 text-sm text-gray-400">
                         <div
-                            class="flex items-center gap-1 hover:text-pink-500 cursor-pointer transition"
+                            class="flex items-center gap-1 hover:text-green-600 cursor-pointer transition"
                         >
                             ❤️ <span>0</span>
                         </div>
@@ -98,16 +130,19 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <!-- Modal -->
             <BaseModal
                 :show="showCreateModal"
-                confirmText="Create Post"
-                @cancel="showCreateModal = false"
-                @confirm="handleCreate"
+                :confirmText="isEditing ? 'Update Post' : 'Create Post'"
+                @cancel="handleCancel"
+                @confirm="handleSubmit"
             >
                 <template #title>
                     <h2 class="text-xl font-semibold text-gray-800">
-                        Create Announcement
+                        {{
+                            isEditing
+                                ? "Edit Announcement"
+                                : "Create Announcement"
+                        }}
                     </h2>
                 </template>
 
@@ -118,7 +153,7 @@ onMounted(async () => {
                             <input
                                 v-model="formData.title"
                                 type="text"
-                                class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+                                class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-green-600 focus:border-green-600 focus:outline-none"
                                 placeholder="Enter announcement title"
                             />
                         </label>
@@ -128,7 +163,7 @@ onMounted(async () => {
                             <textarea
                                 v-model="formData.content"
                                 rows="4"
-                                class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+                                class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-green-600 focus:border-green-600 focus:outline-none"
                                 placeholder="Write your announcement..."
                             ></textarea>
                         </label>

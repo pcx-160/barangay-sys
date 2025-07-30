@@ -27,6 +27,15 @@ export const usePostStore = defineStore("post", {
             }
         },
 
+        async editPost(id, formData) {
+            try {
+                const res = await api.put(`/posts/${id}`, formData);
+                console.log(res.data);
+            } catch (error) {
+                console.error("Error updating post:", error);
+            }
+        },
+
         async deletePost(id) {
             try {
                 const res = await api.delete(`/posts/${id}`);
