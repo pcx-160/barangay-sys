@@ -22,6 +22,12 @@ const router = createRouter({
             component: () => import("@/pages/Home.vue"),
             meta: { auth: true },
         },
+        {
+            path: "/about",
+            name: "about",
+            component: () => import("@/pages/about.vue"),
+            meta: { auth: true },
+        },
     ],
 });
 

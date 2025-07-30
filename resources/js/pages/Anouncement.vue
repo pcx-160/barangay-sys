@@ -55,13 +55,17 @@ const handleDelete = async (id) => {
 
 onMounted(async () => {
     posts.value = await getAllPosts();
+
+    //For testing resident acc
+    // setInterval(async () => {
+    //     posts.value = await getAllPosts();
+    // }, 1000);
 });
 </script>
 
 <template>
     <div v-if="authstore.user" class="h-screen bg-gray-100">
         <div class="ml-64 min-h-screen px-8 py-6 bg-gray-50">
-            <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-800">Announcements</h1>
                 <div v-if="authstore.isAdmin">
@@ -110,11 +114,26 @@ onMounted(async () => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- IMAGE PREVIEW -->
+                    <div class="mb-4">
+                        <img
+                            :src="
+                                post.image
+                                    ? `/storage/${post.image}`
+                                    : 'https://placehold.co/600x300?text=No+Image&font=roboto'
+                            "
+                            alt="Post Image"
+                            class="rounded-lg max-h-64 w-full object-cover"
+                        />
+                    </div>
+
                     <p
                         class="text-gray-500 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
                     >
                         {{ post.content }}
                     </p>
+
                     <div class="flex gap-6 text-sm text-gray-400">
                         <div
                             class="flex items-center gap-1 hover:text-green-600 cursor-pointer transition"

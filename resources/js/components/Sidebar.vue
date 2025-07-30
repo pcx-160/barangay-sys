@@ -3,6 +3,7 @@
 import SidebarItem from "./SidebarItem.vue";
 import BaseModal from "./BaseModal.vue";
 import { useAuthStore } from "../stores/auth";
+import { RouterLink } from "vue-router";
 import { ref } from "vue";
 
 const authstore = useAuthStore();
@@ -16,10 +17,10 @@ const confirmLogout = () => {
 
 <template>
     <aside
-        class="h-screen w-64 bg-green-600 text-white flex flex-col justify-between fixed left-0 top-0 z-10"
+        class="h-screen w-64 bg-green-600 text-white flex flex-col justify-between fixed left-0 top-0 z-10 px-4 pb-4"
     >
         <!-- Top section -->
-        <div>
+        <div class="space-y-3">
             <div class="flex justify-center py-4">
                 <img
                     src="/assets/brgy-logo.png"
@@ -28,7 +29,7 @@ const confirmLogout = () => {
                 />
             </div>
 
-            <div class="px-4 pb-4">
+            <div>
                 <input
                     type="text"
                     placeholder="Search"
@@ -36,55 +37,42 @@ const confirmLogout = () => {
                 />
             </div>
 
-            <nav class="px-4 space-y-1">
-                <SidebarItem icon="🏠" text="Feed" badge="10" />
-                <SidebarItem icon="📑" text="Stories" />
-                <SidebarItem icon="👥" text="Friends" badge="2" />
-                <SidebarItem icon="📦" text="APIs" />
-                <SidebarItem icon="💳" text="Subscription" />
-                <SidebarItem icon="⚙️" text="Settings" />
-                <SidebarItem icon="💬" text="Help & Support" />
+            <nav class="flex flex-col space-y-2">
+                <RouterLink :to="{ name: 'home' }"
+                    ><SidebarItem icon="🏠" text="Feed" badge="69"
+                /></RouterLink>
+                <RouterLink :to="{ name: 'about' }"
+                    ><SidebarItem icon="ℹ️" text="About"
+                /></RouterLink>
             </nav>
         </div>
 
         <!-- Bottom section -->
-        <div class="px-4 pb-4 space-y-3">
-            <button
-                class="w-full py-2 px-4 rounded-xl flex items-center justify-between hover:bg-green-500 transition"
-            >
-                <span>Go Pro</span>
-                <span>⭐</span>
-            </button>
-
-            <div
-                class="flex items-center justify-between hover:bg-green-500 transition px-4 py-3 rounded-xl"
-            >
-                <div class="flex items-center gap-3">
-                    <img
-                        src="https://i.pravatar.cc/40"
-                        class="w-10 h-10 rounded-full border border-white"
-                        alt="Avatar"
-                    />
-                    <div>
-                        <p class="text-sm font-semibold">
-                            {{ authstore.user?.username || "Guest" }}
-                        </p>
-                        <p
-                            v-if="authstore.isAdmin"
-                            class="text-xs text-white/70"
-                        >
-                            Barangay Admin
-                        </p>
-                        <p v-else class="text-xs text-white/70">Resident</p>
-                    </div>
+        <div
+            class="flex items-center justify-between hover:bg-green-500 transition px-4 py-3 rounded-xl cursor-pointer"
+        >
+            <div class="flex items-center gap-3">
+                <img
+                    src="https://i.pravatar.cc/40"
+                    class="w-10 h-10 rounded-full border border-white"
+                    alt="Avatar"
+                />
+                <div>
+                    <p class="text-sm font-semibold">
+                        {{ authstore.user?.username || "Guest" }}
+                    </p>
+                    <p v-if="authstore.isAdmin" class="text-xs text-white/70">
+                        Barangay Admin
+                    </p>
+                    <p v-else class="text-xs text-white/70">Resident</p>
                 </div>
-                <button
-                    @click="showLogoutModal = true"
-                    class="text-white/70 cursor-pointer"
-                >
-                    ↩
-                </button>
             </div>
+            <button
+                @click="showLogoutModal = true"
+                class="text-white/70 cursor-pointer"
+            >
+                ↩
+            </button>
         </div>
     </aside>
 
