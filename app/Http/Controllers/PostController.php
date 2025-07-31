@@ -41,7 +41,7 @@ class PostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-        $fields['image'] = $request->file('image')->store('posts', 'public'); // store in storage/app/public/posts
+        $fields['image'] = $request->file('image')->store('posts', 'public');
         }
 
         $post = $request->user()->posts()->create($fields);
@@ -91,19 +91,32 @@ class PostController extends Controller
         $fields = $request->validate([
             'title' => 'required|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif'
         ]);
 
+        $imagePath = $post->image;
+        
+        // Handle image update/removal
         if ($request->hasFile('image')) {
-        // Optional: Delete old image
-        if ($post->image && Storage::disk('public')->exists($post->image)) {
-            Storage::disk('public')->delete($post->image);
+            // Delete old image if exists
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            // Store new image
+            $imagePath = $request->file('image')->store('posts', 'public');
+        } elseif (isset($fields['remove_image'])) {
+            // Handle case where frontend wants to remove the image
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $imagePath = null;
         }
 
-        $fields['image'] = $request->file('image')->store('posts', 'public');
-    }
-
-        $post->update($fields);
+        $post->update([
+            'title' => $fields['title'],
+            'content' => $fields['content'],
+            'image' => $imagePath
+        ]);
 
         return response()->json([
             'message' => 'Post updated successfully',
@@ -129,7 +142,7 @@ class PostController extends Controller
 
         if ($post->image && Storage::disk('public')->exists($post->image)) {
         Storage::disk('public')->delete($post->image);
-        }
+    }
 
         $post->delete();
 

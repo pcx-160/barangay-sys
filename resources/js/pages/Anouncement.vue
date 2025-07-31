@@ -34,7 +34,7 @@ const handleSubmit = async () => {
     }
 
     if (isEditing.value) {
-        await editPost(editingPostId.value, realFormData);
+        await editPost(editingPostId.value, formData);
     } else {
         await store("posts", formData);
     }
@@ -62,13 +62,15 @@ const handleCancel = () => {
     formData.image = null;
 };
 
-const handleEdit = async (post) => {
+const handleEdit = (post) => {
     formData.title = post.title;
     formData.content = post.content;
+    formData.image = post.image;
     editingPostId.value = post.id;
     isEditing.value = true;
     showCreateModal.value = true;
-    posts.value = await getAllPosts();
+
+    console.log(formData.image);
 };
 
 const handleDelete = async (id) => {
@@ -213,17 +215,19 @@ onMounted(async () => {
                             ></textarea>
                         </label>
 
-                        <label class="flex flex-col space-y-3">
-                            <span class="text-sm text-gray-700"
-                                >Upload Image</span
-                            >
-                            <input
-                                type="file"
-                                @change="handleImageUpload"
-                                accept="image/*"
-                                class="file:mr-4 file:rounded-md file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-green-700 file:font-semibold file:cursor-pointer hover:file:bg-green-200 text-sm text-gray-700"
-                            />
-                        </label>
+                        <div>
+                            <label class="flex flex-col space-y-3">
+                                <span class="text-sm text-gray-700"
+                                    >Upload Image</span
+                                >
+                                <input
+                                    type="file"
+                                    @change="handleImageUpload"
+                                    accept="image/*"
+                                    class="file:mr-4 file:rounded-md file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-green-700 file:font-semibold file:cursor-pointer hover:file:bg-green-200 text-sm text-gray-700"
+                                />
+                            </label>
+                        </div>
                     </div>
                 </template>
             </BaseModal>

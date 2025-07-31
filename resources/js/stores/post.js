@@ -34,12 +34,26 @@ export const usePostStore = defineStore("post", {
             }
         },
 
-        async editPost(id, formData) {
+        async editPost(id, payload) {
             try {
-                const res = await api.put(`/posts/${id}`, formData);
-                console.log(res.data);
+                const formData = new FormData();
+                formData.append("title", payload.title);
+                formData.append("content", payload.content);
+                formData.append("_method", "PUT"); // Important for Laravel to recognize as PUT request
+
+                if (payload.image instanceof File) {
+                    formData.append("image", payload.image);
+                }
+
+                const res = await api.post(`/posts/${id}`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+                return res.data;
             } catch (error) {
                 console.error("Error updating post:", error);
+                throw error;
             }
         },
 
