@@ -4,7 +4,11 @@ import Sidebar from "../components/Sidebar.vue";
 
 <template>
     <Sidebar />
-    <div class="ml-64 min-h-screen px-8 py-6 bg-gray-50">
-        <h1>ABOUT PAGE</h1>
+    <div
+        class="ml-64 min-h-screen px-8 py-6 bg-gray-50 flex justify-center items-center"
+    >
+        <h1 class="text-5xl font-bold text-gray-400 tracking-wide">
+            ABOUT PAGE
+        </h1>
     </div>
 </template>

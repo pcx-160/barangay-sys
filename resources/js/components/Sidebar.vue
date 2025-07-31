@@ -76,7 +76,6 @@ const confirmLogout = () => {
         </div>
     </aside>
 
-    <!-- Logout Modal -->
     <BaseModal
         :show="showLogoutModal"
         @cancel="showLogoutModal = false"

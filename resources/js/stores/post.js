@@ -8,8 +8,15 @@ export const usePostStore = defineStore("post", {
     }),
 
     actions: {
-        async store(apiRoute, formData) {
+        async store(apiRoute, payload) {
             try {
+                const formData = new FormData();
+                formData.append("title", payload.title);
+                formData.append("content", payload.content);
+                if (payload.image) {
+                    formData.append("image", payload.image);
+                }
+
                 const res = await api.post(`/${apiRoute}`, formData);
                 console.log(res.data);
             } catch (error) {

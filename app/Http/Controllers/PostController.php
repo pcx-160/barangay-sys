@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -30,13 +31,18 @@ class PostController extends Controller
     {
          $user = $request->user();
 
-    if ($user->username !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
+        if ($user->username !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $fields = $request->validate([
             'title' => 'required|max:255',
-            'content' => 'required'
+            'content' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+        $fields['image'] = $request->file('image')->store('posts', 'public'); // store in storage/app/public/posts
+        }
 
         $post = $request->user()->posts()->create($fields);
 
@@ -84,8 +90,18 @@ class PostController extends Controller
 
         $fields = $request->validate([
             'title' => 'required|max:255',
-            'content' => 'required'
+            'content' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+        // Optional: Delete old image
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+            Storage::disk('public')->delete($post->image);
+        }
+
+        $fields['image'] = $request->file('image')->store('posts', 'public');
+    }
 
         $post->update($fields);
 
@@ -109,6 +125,10 @@ class PostController extends Controller
 
         if (!$post) { 
             return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+        Storage::disk('public')->delete($post->image);
         }
 
         $post->delete();

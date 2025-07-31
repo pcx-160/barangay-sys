@@ -14,21 +14,41 @@ const editingPostId = ref(null);
 const formData = reactive({
     title: "",
     content: "",
+    image: null,
 });
 
+const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        formData.image = file;
+        console.log("Image set to formData:", file);
+    }
+};
+
 const handleSubmit = async () => {
+    const realFormData = new FormData();
+    realFormData.append("title", formData.title);
+    realFormData.append("content", formData.content);
+    if (formData.image) {
+        realFormData.append("image", formData.image);
+    }
+
     if (isEditing.value) {
-        await editPost(editingPostId.value, {
-            title: formData.title,
-            content: formData.content,
-        });
+        await editPost(editingPostId.value, realFormData);
     } else {
         await store("posts", formData);
     }
 
+    console.log("Submitting:", {
+        title: formData.title,
+        content: formData.content,
+        image: formData.image,
+    });
+
     posts.value = await getAllPosts();
     formData.title = "";
     formData.content = "";
+    formData.image = null;
     editingPostId.value = null;
     isEditing.value = false;
     showCreateModal.value = false;
@@ -37,6 +57,9 @@ const handleSubmit = async () => {
 const handleCancel = () => {
     showCreateModal.value = false;
     isEditing.value = false;
+    formData.title = "";
+    formData.content = "";
+    formData.image = null;
 };
 
 const handleEdit = async (post) => {
@@ -87,7 +110,7 @@ onMounted(async () => {
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
                 >
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xl font-semibold text-gray-700">
+                        <h2 class="text-xl font-semibold">
                             {{ post.title }}
                         </h2>
 
@@ -115,8 +138,17 @@ onMounted(async () => {
                         </div>
                     </div>
 
-                    <!-- IMAGE PREVIEW -->
-                    <div class="mb-4">
+                    <p
+                        class="text-gray-600 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
+                    >
+                        {{ post.content }}
+                    </p>
+
+                    <!-- /storage/app/public/posts/ -->
+                    <div
+                        v-if="post.image"
+                        class="mb-4 w-full max-w-md mx-auto aspect-video"
+                    >
                         <img
                             :src="
                                 post.image
@@ -124,15 +156,9 @@ onMounted(async () => {
                                     : 'https://placehold.co/600x300?text=No+Image&font=roboto'
                             "
                             alt="Post Image"
-                            class="rounded-lg max-h-64 w-full object-cover"
+                            class="rounded-lg object-contain"
                         />
                     </div>
-
-                    <p
-                        class="text-gray-500 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
-                    >
-                        {{ post.content }}
-                    </p>
 
                     <div class="flex gap-6 text-sm text-gray-400">
                         <div
@@ -185,6 +211,18 @@ onMounted(async () => {
                                 class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-green-600 focus:border-green-600 focus:outline-none"
                                 placeholder="Write your announcement..."
                             ></textarea>
+                        </label>
+
+                        <label class="flex flex-col space-y-3">
+                            <span class="text-sm text-gray-700"
+                                >Upload Image</span
+                            >
+                            <input
+                                type="file"
+                                @change="handleImageUpload"
+                                accept="image/*"
+                                class="file:mr-4 file:rounded-md file:border-0 file:bg-green-100 file:px-4 file:py-2 file:text-green-700 file:font-semibold file:cursor-pointer hover:file:bg-green-200 text-sm text-gray-700"
+                            />
                         </label>
                     </div>
                 </template>

@@ -14,6 +14,7 @@ class Post extends Model
         'user_id',
         'title',
         'content',
+        'image',
     ];
 
     // Relationship: each post belongs to a user
