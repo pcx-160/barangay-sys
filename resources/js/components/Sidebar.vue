@@ -4,7 +4,7 @@ import SidebarItem from "./SidebarItem.vue";
 import BaseModal from "./BaseModal.vue";
 import { useAuthStore } from "../stores/auth";
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 
 const authstore = useAuthStore();
 const showLogoutModal = ref(false);

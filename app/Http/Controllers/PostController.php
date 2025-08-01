@@ -37,7 +37,7 @@ class PostController extends Controller
         $fields = $request->validate([
             'title' => 'required|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif'
         ]);
 
         if ($request->hasFile('image')) {

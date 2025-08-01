@@ -1,13 +1,19 @@
 <script setup>
 import { RouterLink } from "vue-router";
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { storeToRefs } from "pinia";
 
 const { authenticate } = useAuthStore();
+const { errors } = storeToRefs(useAuthStore());
 
 const formData = reactive({
     username: "",
     password: "",
+});
+
+onMounted(() => {
+    errors.value = {};
 });
 </script>
 
@@ -50,6 +56,9 @@ const formData = reactive({
                             placeholder="Create a username"
                             class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
                         />
+                        <p class="text-sm text-red-500" v-if="errors.username">
+                            {{ errors.username[0] }}
+                        </p>
                     </div>
 
                     <div>
@@ -62,6 +71,9 @@ const formData = reactive({
                             placeholder="••••••••"
                             class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-600 focus:outline-none"
                         />
+                        <p class="text-sm text-red-500" v-if="errors.password">
+                            {{ errors.password[0] }}
+                        </p>
                     </div>
 
                     <button

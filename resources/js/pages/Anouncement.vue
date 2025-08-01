@@ -46,20 +46,13 @@ const handleSubmit = async () => {
     });
 
     posts.value = await getAllPosts();
-    formData.title = "";
-    formData.content = "";
-    formData.image = null;
     editingPostId.value = null;
-    isEditing.value = false;
-    showCreateModal.value = false;
+    resetForm();
 };
 
 const handleCancel = () => {
     showCreateModal.value = false;
-    isEditing.value = false;
-    formData.title = "";
-    formData.content = "";
-    formData.image = null;
+    resetForm();
 };
 
 const handleEdit = (post) => {
@@ -76,6 +69,14 @@ const handleEdit = (post) => {
 const handleDelete = async (id) => {
     await deletePost(id);
     posts.value = await getAllPosts();
+};
+
+const resetForm = () => {
+    showCreateModal.value = false;
+    isEditing.value = false;
+    formData.title = "";
+    formData.content = "";
+    formData.image = null;
 };
 
 onMounted(async () => {
