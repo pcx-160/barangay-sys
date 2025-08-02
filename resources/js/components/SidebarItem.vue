@@ -3,12 +3,16 @@ defineProps({
     icon: String,
     text: String,
     badge: [String, Number],
+    active: Boolean,
 });
 </script>
 
 <template>
     <div
-        class="flex items-center justify-between py-2 px-4 rounded-lg hover:bg-green-500 cursor-pointer transition"
+        class="flex items-center justify-between py-2 px-4 rounded-lg cursor-pointer transition"
+        :class="
+            active ? 'bg-green-500 text-white' : 'hover:bg-green-500 text-white'
+        "
     >
         <div class="flex items-center gap-3">
             <span class="text-lg">{{ icon }}</span>

@@ -112,42 +112,71 @@ onMounted(async () => {
                     :key="post.id"
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
                 >
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xl font-semibold">
-                            {{ post.title }}
-                        </h2>
+                    <!-- Header Section -->
+                    <div class="flex justify-between items-start mb-4">
+                        <!-- Admin Info -->
 
                         <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-400"
-                                >MM/DD/YYYY</span
-                            >
-                            <div
-                                v-if="authstore.isAdmin"
-                                class="flex items-center gap-2"
-                            >
-                                <button
-                                    @click="handleDelete(post.id)"
-                                    class="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-md text-sm transition cursor-pointer"
+                            <img
+                                src="/assets/manager.png"
+                                class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover shadow"
+                                alt="Avatar"
+                            />
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-xl font-semibold text-gray-800"
+                                    >Admin</span
                                 >
-                                    🗑️ Delete
-                                </button>
-                                <button
-                                    @click="handleEdit(post)"
-                                    class="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-md text-sm transition cursor-pointer"
-                                >
-                                    ✏️ Edit
-                                </button>
+                                <span class="text-xs text-gray-400">
+                                    {{
+                                        new Date(
+                                            post.created_at
+                                        ).toLocaleString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true, // Optional: shows AM/PM
+                                        })
+                                    }}
+                                </span>
                             </div>
+                        </div>
+
+                        <!-- Edit/Delete Buttons -->
+                        <div
+                            v-if="authstore.isAdmin"
+                            class="flex flex-col md:flex-row items-end gap-2"
+                        >
+                            <button
+                                @click="handleDelete(post.id)"
+                                class="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-md text-sm transition cursor-pointer"
+                            >
+                                🗑️ Delete
+                            </button>
+                            <button
+                                @click="handleEdit(post)"
+                                class="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-md text-sm transition cursor-pointer"
+                            >
+                                ✏️ Edit
+                            </button>
                         </div>
                     </div>
 
+                    <!-- Title -->
+                    <h2 class="text-sm font-semibold text-gray-800">
+                        {{ post.title }}
+                    </h2>
+
+                    <!-- Content -->
                     <p
-                        class="text-gray-600 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
+                        class="text-gray-700 mb-4 break-words whitespace-pre-wrap md:max-h-60 md:overflow-auto"
                     >
                         {{ post.content }}
                     </p>
 
-                    <!-- /storage/app/public/posts/ -->
+                    <!-- Post Image -->
                     <div
                         v-if="post.image"
                         class="mb-4 w-full max-w-md mx-auto aspect-video"
@@ -159,13 +188,14 @@ onMounted(async () => {
                                     : 'https://placehold.co/600x300?text=No+Image&font=roboto'
                             "
                             alt="Post Image"
-                            class="rounded-lg object-contain"
+                            class="rounded-lg object-contain w-full h-full"
                         />
                     </div>
 
+                    <!-- Reactions -->
                     <div class="flex gap-6 text-sm text-gray-400">
                         <div
-                            class="flex items-center gap-1 hover:text-green-600 cursor-pointer transition"
+                            class="flex items-center gap-1 hover:text-red-500 cursor-pointer transition"
                         >
                             ❤️ <span>0</span>
                         </div>

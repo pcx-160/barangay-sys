@@ -3,9 +3,10 @@
 import SidebarItem from "./SidebarItem.vue";
 import BaseModal from "./BaseModal.vue";
 import { useAuthStore } from "../stores/auth";
-import { RouterLink } from "vue-router";
-import { ref, defineProps } from "vue";
+import { RouterLink, useRoute } from "vue-router";
+import { ref } from "vue";
 
+const route = useRoute();
 const authstore = useAuthStore();
 const showLogoutModal = ref(false);
 
@@ -39,34 +40,52 @@ const confirmLogout = () => {
 
             <nav class="flex flex-col space-y-2">
                 <RouterLink :to="{ name: 'home' }"
-                    ><SidebarItem icon="🏠" text="Feed" badge="69"
+                    ><SidebarItem
+                        icon="🏠"
+                        text="Feed"
+                        badge="69"
+                        :active="route.name === 'home'"
                 /></RouterLink>
                 <RouterLink :to="{ name: 'about' }"
-                    ><SidebarItem icon="ℹ️" text="About"
+                    ><SidebarItem
+                        icon="ℹ️"
+                        text="About"
+                        :active="route.name === 'about'"
                 /></RouterLink>
             </nav>
         </div>
-
         <!-- Bottom section -->
         <div
             class="flex items-center justify-between hover:bg-green-500 transition px-4 py-3 rounded-xl cursor-pointer"
         >
-            <div class="flex items-center gap-3">
-                <img
-                    src="https://i.pravatar.cc/40"
-                    class="w-10 h-10 rounded-full border border-white"
-                    alt="Avatar"
-                />
-                <div>
-                    <p class="text-sm font-semibold">
-                        {{ authstore.user?.username || "Guest" }}
-                    </p>
-                    <p v-if="authstore.isAdmin" class="text-xs text-white/70">
-                        Barangay Admin
-                    </p>
-                    <p v-else class="text-xs text-white/70">Resident</p>
+            <RouterLink :to="{ name: 'profile' }">
+                <div class="flex items-center gap-3">
+                    <img
+                        v-if="authstore.isAdmin"
+                        src="/assets/manager.png"
+                        class="w-10 h-10 rounded-full border border-white bg-white object-center"
+                        alt="Avatar"
+                    />
+                    <img
+                        v-else
+                        src="https://i.pravatar.cc/40"
+                        class="w-10 h-10 rounded-full border border-white bg-white object-center"
+                        alt="Avatar"
+                    />
+                    <div>
+                        <p class="text-sm font-semibold">
+                            {{ authstore.user?.username || "Guest" }}
+                        </p>
+                        <p
+                            v-if="authstore.isAdmin"
+                            class="text-xs text-white/70"
+                        >
+                            Barangay Admin
+                        </p>
+                        <p v-else class="text-xs text-white/70">Resident</p>
+                    </div>
                 </div>
-            </div>
+            </RouterLink>
             <button
                 @click="showLogoutModal = true"
                 class="text-white/70 cursor-pointer"
